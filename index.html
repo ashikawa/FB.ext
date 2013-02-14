@@ -9,24 +9,41 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	<link rel="stylesheet" href="./css/reset.css?v=1.0">
+	<link rel="stylesheet" href="./css/main.css?v=1.0">
 </head>
 <body>
 
 	<h1>FeedDialogTest</h1>
 
-	<ul id="friends-container" style="width:500px;">
-<script id="friends-tmpl" type="text/x-jquery-tmpl">
-	<li style="float: left;" data-id="${id}">
-		<img src="${picture.data.url}" alt="${name}" />
-	</li>
-</script>
-	</ul>
+	<h2>FriendsList</h2>
 
+	<div class="friends-box">
+		<ul id="friends-container">
+<script id="friends-tmpl" type="text/x-jquery-tmpl">
+		<li style="float: left;" data-id="${id}">
+			<img src="${picture.data.url}" alt="${name}" />
+		</li>
+</script>
+		</ul>
+	</div>
+
+	<h2>Reccomended</h2>
+	<div class="friends-box">
+		<ul id="reccomended-container">
+<script id="reccomended-tmpl" type="text/x-jquery-tmpl">
+		<li style="float: left;" data-id="${id}">
+			<img src="${picture.data.url}" alt="${name}" />
+		</li>
+</script>
+		</ul>
+	</div>
 
 <div id="fb-root"></div>
-<script src="./js/main.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 <script src="./js/jquery.tmpl.min.js"></script>
 <script src="./js/jquery.easing-1.3.min.js"></script>
+<script src="./js/fbDeferred.js"></script>
+<script src="./js/main.js"></script>
+<script src="./js/facebook.js"></script>
 </body>
 </html>

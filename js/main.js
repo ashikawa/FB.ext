@@ -1,112 +1,121 @@
-/*global FB, $, jQuery, console*/
-window.fbAsyncInit = function() {
+/*global FB, $, jQuery, console, fbDeferred, window*/
+(function () {
     'use strict';
 
-    // init the FB JS SDK
-    FB.init({
-        appId      : '269461469851305', // App ID from the App Dashboard
-        status     : true, // check the login status upon init?
-        cookie     : true, // set sessions cookies to allow your server to access the?
-        xfbml      : true  // parse XFBML tags on this page?
-    });
+    // 遅延初期化
+    var callMutualfriends = function (data) {
 
-    var scope  = {scope: 'friends_likes'},
-        $login;
+        var reccomendedLength     = 40,
+            $reccomendedTmpl      = $('#reccomended-tmpl'),
+            $reccomendedContainer = $('#reccomended-container');
 
-    $login = $.Deferred(function ($dfd) {
-        FB.login(function (response) {
-            if (response.authResponse) {
-                $dfd.resolve(response);
-            } else {
-                $dfd.reject(response);
-            }
-        }, scope);
-    }).promise();
+        function lazyFunc(data) {
 
-    function fbDfd() {
+            $.each(data, function (i, element) {
+                var id   = element.id,
+                    $dfd = fbDeferred.api('/' + id + '/mutualfriends?fields=id');
 
-        var $dfd = $.Deferred(),
-            args = [],
-            i;
+                $dfd.done(function (response) {
 
-        for (i = 0; i < arguments.length; i++) {
-            args[i] = arguments[i];
+                    var length = response.data.length;
+
+                    if (length <= reccomendedLength) {
+                        return;
+                    }
+
+                    $reccomendedTmpl.tmpl(element)
+                        .appendTo($reccomendedContainer);
+                });
+            });
         }
 
-        args.push(function (response) {
-            if (!response || response.error) {
-                $dfd.reject(response);
-            } else {
-                $dfd.resolve(response);
+        lazyFunc(data);
+        callMutualfriends = lazyFunc;
+    };
+
+    function setupFriendsBox() {
+
+        var $login                = fbDeferred.login(),
+            friendsApiLimit       = 10,
+            $friendsTmpl          = $('#friends-tmpl'),
+            $friendsContainer     = $('#friends-container');
+
+
+        // !!! PROCESS !!!!!
+        function callFriends(offset) {
+
+            var limit = friendsApiLimit,
+                $friendsDfd;
+
+            if (offset === undefined) {
+                offset = 0;
             }
+
+            $friendsDfd = fbDeferred
+                .api('/me/friends?fields=name,picture&offset=' + offset +  '&limit=' + limit);
+
+            $friendsDfd.done(function (response) {
+
+                if (!response.data.length) {
+                    return;
+                }
+
+                $friendsTmpl.tmpl(response.data)
+                    .appendTo($friendsContainer);
+
+                offset += limit;
+
+                if (response.data.length === limit) {
+                    callFriends(offset); //recursive
+                }
+            });
+
+            $friendsDfd.done(function (response) {
+                callMutualfriends(response.data);
+            });
+
+            $friendsDfd.done(function (response) {
+                console.log(response);
+            });
+        }
+
+        $login.done(function (response) {
+            callFriends();
         });
-
-        FB.api.apply({}, args);
-
-        return $dfd.promise();
     }
 
-    var limit  = 10,
-        offset = 0,
-        $friendsTmpl = $('#friends-tmpl');
+    function eventify() {
 
-    function callFriendsDfd() {
-// friends_likes
-        var $dfd = fbDfd('me/friends?fields=name,picture&offset=' + offset +  '&limit=' + limit);
+        function openFeedDialog(id) {
 
-        $dfd.done(function (response) {
+            FB.ui({
+                method: 'feed',
+                to: id,
+                // to: ['1576428973', '1275738399'],
+                name: 'Sample Feed Dialog',
+                caption: 'Sample Caption',
+                description: 'Sample Description',
+                link: 'http://ja.wikipedia.org/wiki/%E3%83%9A%E3%83%B3%E3%82%AE%E3%83%B3',
+                picture: 'http://ngm.nationalgeographic.com/2012/11/emperor-penguins' +
+                    '/img/02-airborne-penguin-exits-water_1600.jpg'
+            }, function (response) {
+                if (response && response.post_id) {
+                    console.log('Post was published.');
+                } else {
+                    console.log('Post was not published.');
+                }
+            });
+        }
 
-            if (!response.data.length) {
-                return;
-            }
-
-            $friendsTmpl.tmpl(response.data)
-                .appendTo('#friends-container');
-
-            offset = offset + limit;
-
-            if (response.data.length == limit) {
-                callFriendsDfd(); //recursive
-            }
+        $('.friends-box').on('click', 'li', function (event) {
+            var id = $(this).attr('data-id');
+            openFeedDialog(id);
+            return false;
         });
-
-        $dfd.done(function (response){
-            console.log(response);
-        });
-
-        return $dfd;
     }
 
-    $login.done(function (response) {
-        return callFriendsDfd();
-    });
-
-    $('#friends-container').on('click', 'li', function (event) {
-        var id = $(this).attr('data-id');
-
-        FB.ui({
-            method: 'feed',
-            to: id,
-            // to: ['1576428973', '1275738399'],
-            name: 'Sample Feed Dialog',
-            caption: 'Sample Caption',
-            description: 'Sample Description',
-            link: 'http://ja.wikipedia.org/wiki/%E3%83%9A%E3%83%B3%E3%82%AE%E3%83%B3',
-            picture: 'http://ngm.nationalgeographic.com/2012/11/emperor-penguins/img/02-airborne-penguin-exits-water_1600.jpg'
-        }, function (response) {
-            if (response && response.post_id) {
-                console.log('Post was published.');
-            } else {
-                console.log('Post was not published.');
-            }
-        });
-    });
-};
-
-(function(d, debug){
-    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement('script'); js.id = id; js.async = true;
-    js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
-    ref.parentNode.insertBefore(js, ref);
-}(document, /*debug*/ false));
+    window.fbAsyncInit = function () {
+        setupFriendsBox();
+        eventify();
+    };
+}());
