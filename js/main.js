@@ -1,9 +1,12 @@
-/*global FB, $, jQuery, console, fbDeferred, window*/
-(function () {
-    'use strict';
+/*jslint browser:true*/
+/*global FB, jQuery, console*/
+(function ($) {
+
+    var callMutualfriends,
+        init;
 
     // 遅延初期化
-    var callMutualfriends = function (data) {
+    callMutualfriends = function (data) {
 
         var reccomendedLength     = 40,
             $reccomendedTmpl      = $('#reccomended-tmpl'),
@@ -13,7 +16,7 @@
 
             $.each(data, function (i, element) {
                 var id   = element.id,
-                    $dfd = fbDeferred.api('/' + id + '/mutualfriends?fields=id');
+                    $dfd = FB.deferred.api('/' + id + '/mutualfriends?fields=id');
 
                 $dfd.done(function (response) {
 
@@ -35,7 +38,7 @@
 
     function setupFriendsBox() {
 
-        var $login                = fbDeferred.login(),
+        var $login                = FB.deferred.login(),
             friendsApiLimit       = 10,
             $friendsTmpl          = $('#friends-tmpl'),
             $friendsContainer     = $('#friends-container');
@@ -51,7 +54,7 @@
                 offset = 0;
             }
 
-            $friendsDfd = fbDeferred
+            $friendsDfd = FB.deferred
                 .api('/me/friends?fields=name,picture&offset=' + offset +  '&limit=' + limit);
 
             $friendsDfd.done(function (response) {
@@ -114,8 +117,11 @@
         });
     }
 
+    init = window.fbAsyncInit || $.noop;
+
     window.fbAsyncInit = function () {
+        init();
         setupFriendsBox();
         eventify();
     };
-}());
+}(jQuery));

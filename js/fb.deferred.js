@@ -1,6 +1,9 @@
-/*global window, $, FB*/
-(function () {
+/*jslint browser:true*/
+/*global jQuery, FB*/
+(function ($) {
     'use strict';
+
+    var init = window.fbAsyncInit || $.noop;
 
     /**
      * FacebookAPI の Deferred ラッパー
@@ -58,8 +61,12 @@
         return $dfd.promise();
     }
 
-    window.fbDeferred = {
-        login: login,
-        api: api
+    window.fbAsyncInit = function () {
+        FB.deferred = {
+            api: api,
+            login: login
+        };
+
+        return init();
     };
-}());
+}(jQuery));

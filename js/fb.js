@@ -1,12 +1,9 @@
-/*global FB, $, jQuery, console, window*/
+/*jslint browser:true*/
+/*global FB*/
 (function () {
     'use strict';
 
-    var init = function () {};
-
-    if (window.fbAsyncInit) {
-        init = window.fbAsyncInit;
-    }
+    var init = window.fbAsyncInit || function () {};
 
     window.fbAsyncInit = function () {
 
@@ -22,10 +19,14 @@
     };
 }());
 
-(function(d, debug){
-    var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement('script'); js.id = id; js.async = true;
+(function (d, debug) {
+    var js,
+        id = 'facebook-jssdk',
+        ref = d.getElementsByTagName('script')[0];
+    if (d.getElementById(id)) { return; }
+    js = d.createElement('script');
+    js.id = id;
+    js.async = true;
     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
     ref.parentNode.insertBefore(js, ref);
 }(document, /*debug*/ false));
