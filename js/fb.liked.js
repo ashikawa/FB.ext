@@ -17,10 +17,10 @@
 
         function callAPi() {
             FB.deferred.api('/me/likes/' + id).done(function (response) {
-                if (response.data === '') {
-                    remove();
-                } else {
+                if (response.data.length) {
                     create();
+                } else {
+                    remove();
                 }
                 always();
             });
