@@ -1,4 +1,4 @@
-/*jslint browser:true*/
+/*jslint browser: true, plusplus: true, unparam:true*/
 /*global jQuery, FB*/
 (function ($) {
     'use strict';

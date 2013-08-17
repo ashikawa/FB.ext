@@ -1,4 +1,4 @@
-/*jslint browser:true*/
+/*jslint browser: true, plusplus: true, unparam:true*/
 /*global FB*/
 (function () {
     'use strict';
@@ -20,6 +20,7 @@
 }());
 
 (function (d, debug) {
+    'use strict';
     var js,
         id = 'facebook-jssdk',
         ref = d.getElementsByTagName('script')[0];

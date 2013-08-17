@@ -1,4 +1,4 @@
-/*jslint browser:true*/
+/*jslint browser: true, plusplus: true, unparam:true*/
 /*global jQuery, FB*/
 /**
  * FB.deferred
@@ -9,18 +9,6 @@
 
     var init = window.fbAsyncInit || $.noop;
 
-    function searchId(id, data) {
-        var length = data.length,
-            i;
-
-        for (i = 0; i < length; i++) {
-            if (data[i].id === id) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     function liked(id, create, remove, always) {
 
         create = create || $.noop;
@@ -28,13 +16,11 @@
         always = always || $.noop;
 
         function callAPi() {
-            FB.deferred.api('/me/likes?fields=id').done(function (response) {
-                var liked = searchId(id, response.data);
-
-                if (liked) {
-                    create();
-                } else {
+            FB.deferred.api('/me/likes/' + id).done(function (response) {
+                if (response.data === '') {
                     remove();
+                } else {
+                    create();
                 }
                 always();
             });

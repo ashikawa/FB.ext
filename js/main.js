@@ -1,7 +1,7 @@
-/*jslint browser:true*/
+/*jslint browser:true, unparam:true*/
 /*global FB, jQuery, console*/
 (function ($) {
-
+    'use strict';
     var callMutualfriends,
         init;
 
