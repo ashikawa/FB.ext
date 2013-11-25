@@ -17,7 +17,7 @@ FB.login の $.Deferred ラーッパー
 
 ## FB.deferred.api()
 
-FB.api の $.Deferred ラーッパー
+FB.api の $.Deferred ラッパー
 
 *Usage*: FB.deferred.api(path, method, params)  
 
