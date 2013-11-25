@@ -4,7 +4,7 @@ Facebook JavaScript SDK の拡張
 
 ### FB.deferred.login()
 
-FB.login の $.Deferred ラーッパー
+FB.login の $.Deferred ラッパー
 
 *Usage*: FB.deferred.login()  
 *Returns*: $.Deferred
